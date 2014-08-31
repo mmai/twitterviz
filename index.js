@@ -16,9 +16,28 @@ cli.parse({
     username:  ['u', 'The twitter user name', 'string'],
     limit:  ['l', 'Maximum number of followers to fetch', 'int']
   },
-  ['farthest', 'worldtour']
+  ['farthest', 'worldtour', 'goto']
 );
 
+//Check the destination
+if (cli.command === "goto"){
+  var destination_name = cli.args[0];
+  if (!destination_name){
+    cli.error("You must indicate a destination after 'goto'");
+    cli.exit();
+  } else {
+    var found_destination = geo.addGeoloc({location: destination_name})
+    .then(function(data, error){
+        if (error || !data.latitude){
+          cli.error("Could not localize '"+ destination_name + "'");
+          cli.exit();
+        } 
+        return data;
+      });
+  }
+}
+
+//Everything ok. We can fetch twitter followers infos. 
 var tw = new Twitter(settings.twitter_credentials);
 
 tw.verifyCredentials().then(function(){
@@ -71,7 +90,20 @@ tw.verifyCredentials().then(function(){
         var user = datas[0];
         var places = datas[1];
 
-        if (cli.command === 'farthest'){
+        if (cli.command === 'goto'){
+          found_destination.then(function(destination){
+              cli.spinner("Calculating itinerary...")
+              var path = geo.gotopath(user, destination, places);
+              cli.spinner("Calculating itinerary... done!\n", true);
+              cli.output("\n--------------------------------------------------\n");
+              cli.output("Going from " + user.location + " to " + destination_name + "\n");
+              cli.output("--------------------------------------------------\n\n");
+              path.forEach(function(place){
+                  cli.output(formatPlaceUsers(place) + "\n");
+                });
+              // cli.output(destination_name + "\n");
+            }).done();
+        } else if (cli.command === 'farthest'){
           cli.spinner("Calculating itinerary...")
           var farthest_place = geo.farthest(user, places);
           var path = geo.geopath(user, farthest_place, places);

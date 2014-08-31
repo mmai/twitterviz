@@ -1,3 +1,5 @@
+Determine the best route to reach a destination, stopping at your Twitter followers' places.
+
 Installation
 ============
 
@@ -12,6 +14,7 @@ Usage
 =====
 
 ```sh
+node index.js -u <twitter_username> goto "Lisbon, Portugal"
 node index.js -u <twitter_username> worldtour
 ```
 

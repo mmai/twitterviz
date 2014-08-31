@@ -58,6 +58,11 @@ Geo.prototype.worldtour = function(origin, candidates){
   );
 };
 
+Geo.prototype.gotopath = function(from, to, candidates){
+  var nearest_candidate = this.nearest(to, candidates);
+  return this.geopath(from, nearest_candidate, candidates).concat([nearest_candidate]);
+};
+
 Geo.prototype.geopath = function(from, to, candidates){
   var path = [];
   var middle_candidate = this.middle(from, to, candidates);
