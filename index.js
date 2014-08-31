@@ -10,7 +10,7 @@ var Twitter = require('./twitter-client');
 var Geo = require('./geo-helpers');
 var settings = require('./settings');
 
-var geo = new Geo(__dirname + '/tiles');
+var geo = new Geo(__dirname + '/node_modules/carmen/tiles');
 
 cli.parse({
     username:  ['u', 'The twitter user name', 'string'],

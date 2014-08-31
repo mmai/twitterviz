@@ -2,14 +2,16 @@ Installation
 ============
 
 Copy settings_example.js to settings.js and edit your Twitter credentials.
-
-Carmen
-------
-
-```
-npm install carmen
-cd node_modules/carmen
+Then run these commands : 
+```sh
 npm install
-./scripts/install-dbs.sh
+./node_modules/carmen/scripts/install-dbs.sh
+```
+
+Usage
+=====
+
+```sh
+node index.js -u <twitter_username> worldtour
 ```
 
