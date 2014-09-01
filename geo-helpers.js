@@ -27,6 +27,7 @@ var Geo = function(tiles_directory){
             if (data.relevance > 0.8){
               objectWithAdress["longitude"] = data.center[0];
               objectWithAdress["latitude"] = data.center[1];
+              objectWithAdress["computed_location"] = data.place_name;
             }
           }
           deferred.resolve(objectWithAdress);

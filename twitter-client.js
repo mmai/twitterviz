@@ -1,7 +1,7 @@
 'use strict';
 
 var Q = require('q');
-var ntwitter = require('ntwitter');
+var twit = require('twit');
 var fs = require('fs');
 
 var Twitter = function(twitter_credentials){
@@ -11,19 +11,13 @@ var Twitter = function(twitter_credentials){
 Twitter.prototype = {
   verifyCredentials: function(){
     var deferred = Q.defer();
-    this.twitter = new ntwitter(this.credentials).verifyCredentials(function (err, data) {
-        if (err) {
-          deferred.reject(err);
-        } else {
-          deferred.resolve(true);
-        }
-      });
+    this.twitter = new twit(this.credentials);
+    deferred.resolve(true);
     return deferred.promise;
   },
   getInfos: function(twitter_account){
     var deferred = Q.defer();
-    // var twitter = new ntwitter(this.credentials).verifyCredentials(function (err, data) { if (err) deferred.reject(err); });
-    this.twitter.showUser(twitter_account, function(err, data){
+    this.twitter.get('users/lookup', {screen_name: twitter_account}, function (err, data, response){
         if (err) {
           deferred.reject(err);
         } else {
@@ -50,7 +44,7 @@ Twitter.prototype = {
         }
 
         var nb_requests_needed = Math.ceil( followers_count / 200);
-        self.twitter.get("/application/rate_limit_status.json", {resources: 'followers'}, function (err, quotas) {
+        self.twitter.get("application/rate_limit_status", {resources: 'followers'}, function (err, quotas) {
             var quota = quotas.resources.followers['/followers/list'].remaining;
             if (quota < nb_requests_needed){
               deferred.reject("Insuficient Twitter quota ("+quota+" for "+nb_requests_needed+" needed)");
@@ -68,7 +62,7 @@ Twitter.prototype = {
     var self = this;
     cursor = cursor || -1;
     var deferred = Q.defer();
-    this.twitter.get("/followers/list.json", {screen_name: twitter_account, count: 200, cursor: cursor}, function (err, data) {
+    this.twitter.get("followers/list", {screen_name: twitter_account, count: 200, cursor: cursor}, function (err, data) {
         if (err) {
           deferred.reject(err);
         } else {

@@ -11,7 +11,7 @@
   "main": "./bin/twitterviz.js",
   "bin": {
     "twitterviz": "./bin/twitterviz.js"
-  }
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,6 +22,7 @@
     "carmen": "~0.5.0",
     "mbtiles": "~0.4.0",
     "geolib": "~2.0.14",
-    "cli": "~0.6.4"
+    "cli": "~0.6.4",
+    "twit": "~1.1.18"
   }
 }

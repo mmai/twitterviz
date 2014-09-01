@@ -41,7 +41,7 @@ if (cli.command === "goto"){
 var tw = new Twitter(settings.twitter_credentials);
 
 tw.verifyCredentials().then(function(){
-    var user_promise = tw.getInfos(cli.options.username).then(geo.addGeoloc);
+    var user_promise = tw.getInfos(cli.options.username).then(geo.addGeoloc)
     // .done();
 
     cli.output("Fetching @" + cli.options.username + " followers...\n");
@@ -128,7 +128,7 @@ tw.verifyCredentials().then(function(){
         }
       })
     .done();
-  });
+  }).done();
 
 function toPlaces(users){
   var placesObj = R.groupBy(function(user){return user.location}, users);
@@ -142,9 +142,9 @@ function toPlaces(users){
 function formatPlaceUsers(place){
   var users = "";
   if (place.users.length < 4){
-    users = place.users.map(function(user){return user.name;}).join(", ");
+    users = place.users.map(function(user){return "@" + user.screen_name;}).join(", ");
   } else {
-    users = place.users[0].name + ", " + place.users[1].name + " and " + (place.users.length - 2) + " others";
+    users = "@" + place.users[0].screen_name + ", @" + place.users[1].screen_name + " and " + (place.users.length - 2) + " others";
   }
-  return place.location + " (" + users + ")";
+  return place.computed_location + " (" + users + ")";
 }
