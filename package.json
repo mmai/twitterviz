@@ -1,13 +1,20 @@
 {
   "name": "twitterviz",
   "version": "0.1.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Determine the best route to reach a destination, stopping at your Twitter followers' places",
+  "author": "Henri Bourcereau",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mmai/twitterviz.git"
+  },
+  "main": "./bin/twitterviz.js",
+  "bin": {
+    "twitterviz": "./bin/twitterviz.js"
+  }
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "ntwitter": "~0.5.0",
     "ramda": "~0.3.0",

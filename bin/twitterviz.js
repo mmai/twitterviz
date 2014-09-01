@@ -6,11 +6,11 @@ var cli = require('cli');
 var Q = require('q');
 var R = require('ramda');
 
-var Twitter = require('./twitter-client');
-var Geo = require('./geo-helpers');
-var settings = require('./settings');
+var Twitter = require(__dirname + '/../twitter-client');
+var Geo = require(__dirname + '/../geo-helpers');
+var settings = require(__dirname + '/../settings');
 
-var geo = new Geo(__dirname + '/node_modules/carmen/tiles');
+var geo = new Geo(__dirname + '/../node_modules/carmen/tiles');
 
 cli.parse({
     username:  ['u', 'The twitter user name', 'string'],
