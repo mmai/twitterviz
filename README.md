@@ -3,7 +3,7 @@ Installation
 
 * Follow these instructions to create a twitter app and get access tokens : https://dev.twitter.com/docs/auth/tokens-devtwittercom
 * Copy settings_example.js to settings.js and edit your Twitter credentials.
-* Install dependencies and download Geolocation data (300 Mo) whith these commands:
+* Install dependencies and download Geolocation data (300 MB) with these commands:
 
 ```sh
 npm install
