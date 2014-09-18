@@ -183,7 +183,8 @@ YUI.add('Twitter', function (Y) {
 				if (yql) {
 					//Y.log(config);
 					yql = yql.replace("#oauth#", ' oauth_token = "' + config.oauth_token + '" AND oauth_token_secret = "' + config.oauth_token_secret + '"');
-					params.env = "store://tweetanium.net/tweetanium06";
+					// params.env = "store://tweetanium.net/tweetanium06";
+					params.env = "store://mmai.github.io/twitterviz";
 					//Y.log("Executing: " + yql);
 					new Y.YQL(yql, function (r) {
 						//Y.log("Reponse:");
