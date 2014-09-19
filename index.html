@@ -1,19 +1,24 @@
 ﻿<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title>Javascript oAuth</title>
-    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-    <script src="http://code.jquery.com/jquery-migrate-1.1.0.js"></script>
-    <script type="text/javascript" src="http://yui.yahooapis.com/3.3.0/build/yui/yui-min.js"></script>
-    <script src="js/cookie.js"></script>
-    <script src="js/twitterLogin.js"></script>
-    <link href="css/style.css" rel="stylesheet" />
-</head>
-<body>
+<link rel="stylesheet" href="/adorn/adorn.css"></script>
+<script src="/adorn/adorn.js"></script>
+<script src="js/hello.all.min.js"></script>
+<title>hello( twitter )</title>
+<h1>hello( twitter )</h1>
+<button id='login' onclick="hello.login('twitter');">Twitter</button>
+<div id="result"></div>
+<script class="pre">
+hello.on('auth.login', function(r){
+  // Get Profile
+  hello.api(r.network+':/me', function(p){
+    document.getElementById('login').innerHTML = "<img src='"+ p.thumbnail + "' width=24/>Connected to "+ r.network+" as " + p.name;
+  });
+});
 
-    <div class="loginDiv">
-        <div id="twitterlogin">Twitter</div>
-    </div>
-    <div style="clear:both;" id="userinfo"></div>
-</body>
-</html>
+hello.init({
+  'twitter' : 'kY8RNvNTeEbaier9Q48BJQIOH'
+},
+{
+  redirect_uri:'redirect.html',
+  oauth_proxy: 'https://auth-server.herokuapp.com/proxy'
+});
+</script>
