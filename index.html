@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <link rel="stylesheet" href="/adorn/adorn.css"></script>
 <script src="/adorn/adorn.js"></script>
-<script src="js/hello.all.min.js"></script>
+<script src="js/hello.all.js"></script>
 <title>hello( twitter )</title>
 <h1>hello( twitter )</h1>
 <button id='login' onclick="hello.login('twitter');">Twitter</button>
@@ -10,6 +10,9 @@
 hello.on('auth.login', function(r){
   // Get Profile
   hello.api(r.network+':/me', function(p){
+  console.log("yop");
+  console.log(p);
+  console.log(p.name);
     document.getElementById('login').innerHTML = "<img src='"+ p.thumbnail + "' width=24/>Connected to "+ r.network+" as " + p.name;
   });
 });
