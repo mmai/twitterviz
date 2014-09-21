@@ -1,50 +1,74 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="js/hello.all.js"></script>
-  <script src="js/proxapi.js"></script>
+  <script src="js/hello.all.min.js"></script>
+  <script src="js/proxapi-0.4.1.min.js"></script>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="http://maps.google.com/maps/api/js?sensor=false&.js"></script>
+  
   <title>Twitterviz</title>
   <meta charset="UTF-8">
 </head>
 <body>
-<button id='login' onclick="hello.login('twitter');">Twitter</button>
-<button id='others' onclick='ensuite();'>Ensuite</button>
-<div id="result"></div>
+  <div id='loginStatus'>Not connected</div>
+
+  <input id="twitterinput" type="text" value="mmai" />
+  <button onclick='getFollowers();'>Get followers</button>
+  <button onclick='placeOnMap();'>Place on map cached data</button>
+
+  <div id="map_canvas" style="width:500px;height:500px;"></div>
+  <pre id="whiteBoard"></pre>
+
 <script>
-hello.on('auth.login', function(r){
-  // Get Profile
-  hello.api(r.network+':/me', function(p){
-    document.getElementById('login').innerHTML = "<img src='"+ p.thumbnail + "' width=24/>Connected to "+ r.network+" as " + p.name;
-  });
-});
+  var cachedData = null;
+  var isLogged = false;
+  hello.on('auth.login', function(r){
+    isLogged = true;
 
-var twitterProxy = new ProxAPI({
-  retryDelay: 60*5,
-  translate: function(params, handleResults){
-    var status = {
-      quota: false
-    };
-
-    hello("twitter").api("me/followers", function(r){
-      console.log('from hello:');
-      console.log(r);
-  // .get("followers/list", {screen_name: params.twitter_account, count: 50, cursor: params.cursor}, function (err, data, response) {
-        // if (response.statusCode === 429 || (err && err.message === "Rate limit exceeded")){
-        //   err = null;
-        //   status.quota = true;
-        //   status.retryDelay = response.headers['x-rate-limit-reset'] - (Date.now()/1000) ;
-        // }
-        // handleResults(err, data, status);
-        handleResults(null, r, status);
+    hello.api(r.network+':/me', function(p){
+      document.getElementById('loginStatus').innerHTML = "<img src='"+ p.thumbnail + "' width=24/> Connected to "+ r.network+" as " + p.name;
     });
-  }
-});
+  });
 
-function ensuite(){
-  console.log('ensuite...');
+  hello.init({
+      'twitter' : 'kY8RNvNTeEbaier9Q48BJQIOH'
+    }, {
+      redirect_uri:'redirect.html',
+      oauth_proxy: 'https://auth-server.herokuapp.com/proxy'
+    }
+  );
 
+  var twitterProxy = new ProxAPI({
+    retryDelay: 60*5,
+    translate: function(params, handleResults){
+      var status = {
+        quota: false
+      };
+
+      hello("twitter").api("me/followers", function(r){
+        handleResults(null, r, status);
+      });
+    }
+  });
+
+  var gmapProxy = new ProxAPI({
+    retryDelay: 60*5,
+    translate: function(params, handleResults){
+      var status = {
+        quota: false
+      };
+
+      $.getJSON('http://maps.googleapis.com/maps/api/geocode/json?address=' + params.address + '&sensor=false', null, function (data) {
+        var point = data.results[0].geometry.location
+        handleResults(null, point, status);
+      });
+    }
+  });
+
+function getFollowers(){
   var params = {
-    twitter_account: "mmai",
+    twitter_account: document.getElementById('twitterinput').value,
     cursor: -1
   };
 
@@ -68,21 +92,63 @@ function ensuite(){
       };
     },
     aggregate: function(acc, res){
-      return acc.concat(res.users);
+      return acc.concat(res.data);
     }
   };
 
-  twitterProxy.callUntil(params, options, function(err, data){
-    console.log("Total followers: " + data.length);
-  }, callSettings);
+  if (!isLogged){
+    hello.login('twitter');
+    document.getElementById('loginStatus').innerHTML = "Trying to connect to Twitter...";
+    //Try to log on twitter wait 3 seconds and retry
+    setTimeout(getFollowers(), 3000);
+  } else {
+    twitterProxy.callUntil(callSettings, params, options, function(err, data){
+      cachedData = data;
+      display("Total followers: " + data.length);
+      placeOnMap(data);
+    });
+  }
 }
 
-hello.init({
-  'twitter' : 'kY8RNvNTeEbaier9Q48BJQIOH'
-}, {
-  redirect_uri:'redirect.html',
-  oauth_proxy: 'https://auth-server.herokuapp.com/proxy'
-});
+function placeOnMap(data){
+  data = data || cachedData;
+  var map;
+  var elevator;
+  var myOptions = {
+      zoom: 1,
+      center: new google.maps.LatLng(0, 0),
+      mapTypeId: 'terrain'
+  };
+  map = new google.maps.Map($('#map_canvas')[0], myOptions);
+
+  var proxyOptions = {
+    strategy: "retry",
+    onEvent: function(eventName, data){
+      if (eventName === "retrying"){
+        display(data);
+      }
+    }
+  };
+
+  var address = null;
+  for (var x = 0; x < data.length; x++) {
+    if (data[x].location){
+      address = encodeURIComponent(data[x].location);
+      gmapProxy.call({address: address}, proxyOptions, function(err, point){
+        var latlng = new google.maps.LatLng(point.lat, point.lng);
+        new google.maps.Marker({
+            position: latlng,
+            map: map
+        });
+      });
+    }
+  }
+}
+
+var whiteBoard = document.getElementById("whiteBoard");
+function display(txt){
+  whiteBoard.innerHTML = whiteBoard.innerHTML + "\n" + JSON.stringify(txt);
+}
 </script>
 
 </body>
