@@ -1265,10 +1265,9 @@ hello.utils.extend( hello.utils, {
 							href : a.href
 						},
 						close : function(){
-							//alert('closing location:'+url);
-							// if(popup.close){
-							// 	popup.close();
-							// }
+							if(popup.close){
+								popup.close();
+							}
 						}
 					};
 
@@ -1283,7 +1282,7 @@ hello.utils.extend( hello.utils, {
 					// Always close the popup reguardless of whether the hello.utils.responseHandler detects a state parameter or not in the querystring.
 					// Such situations might arise such as those in #63
 
-					// _popup.close();
+					_popup.close();
 
 				});
 			}
@@ -1421,7 +1420,7 @@ hello.utils.extend( hello.utils, {
 				parent[p.callback]( res );
 
 				// Close this window
-				// closeWindow();
+				closeWindow();
 			}
 		}
 		//
@@ -1484,9 +1483,9 @@ hello.utils.extend( hello.utils, {
 				}
 
 			}
-			//console.log("Trying to close window");
+			console.log("Trying to close window");
 
-			// closeWindow();
+			closeWindow();
 		}
 
 
